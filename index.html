@@ -14,6 +14,7 @@
     button:disabled { background: #999; }
     .hidden { display: none; }
     .btn-whatsapp { display: block; text-align: center; background: #25D366; color: white; text-decoration: none; padding: 12px; border-radius: 4px; font-weight: bold; margin-top: 15px; }
+    .btn-voltar { background: #6c757d; margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -37,7 +38,6 @@
     <input type="text" id="fonteSonora" placeholder="Ex: caixas de som, música ao vivo" required>
 
     <label>Vídeo ou Foto da Medição</label>
-    <!-- O atributo capture="environment" força a abertura da câmera no celular -->
     <input type="file" id="midiaFile" accept="video/*,image/*" capture="environment">
 
     <button type="submit" id="btnSubmit">Enviar e Gerar WhatsApp</button>
@@ -48,6 +48,7 @@
   <h2>✅ Registro Salvo com Sucesso!</h2>
   <p>O arquivo foi enviado para a pasta <b>Midia_da_Medicao</b> e gravado na planilha.</p>
   <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">📲 Enviar Notificação via WhatsApp</a>
+  <button type="button" class="btn-voltar" id="btnVoltar">🔄 Novo Registro / Voltar</button>
 </div>
 
 <script>
@@ -62,7 +63,9 @@
     });
   }
 
-  document.getElementById('rondaForm').addEventListener('submit', async function(e) {
+  const form = document.getElementById('rondaForm');
+
+  form.addEventListener('submit', async function(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
     btn.disabled = true;
@@ -113,6 +116,17 @@
       btn.disabled = false;
       btn.textContent = "Enviar e Gerar WhatsApp";
     }
+  });
+
+  // Botão para voltar, limpar o formulário e reativar o botão de envio
+  document.getElementById('btnVoltar').addEventListener('click', function() {
+    form.reset(); // Limpa todos os campos
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = false;
+    btn.textContent = "Enviar e Gerar WhatsApp";
+
+    document.getElementById('successCard').classList.add('hidden');
+    document.getElementById('formCard').classList.remove('hidden');
   });
 </script>
 
