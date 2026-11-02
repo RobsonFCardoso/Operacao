@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Medição de Ruído e Vídeo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 15px; background: #f4f4f9; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    h2 { margin-top: 0; color: #333; font-size: 1.2rem; }
+    label { font-weight: bold; display: block; margin-top: 12px; font-size: 0.9rem; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { margin-top: 18px; width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+    button:disabled { background: #999; }
+    .hidden { display: none; }
+    .btn-whatsapp { display: block; text-align: center; background: #25D366; color: white; text-decoration: none; padding: 12px; border-radius: 4px; font-weight: bold; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+<div class="card" id="formCard">
+  <h2>🚨 Registro de Medição de Ruído e Vídeo</h2>
+  <form id="rondaForm">
+    <label>Data da Medição *</label>
+    <input type="date" id="dataMedicao" required>
+
+    <label>Endereço Completo (Rua, Nº, Bairro) *</label>
+    <input type="text" id="endereco" required>
+
+    <label>Nome do Estabelecimento / Alvo *</label>
+    <input type="text" id="estabelecimento" required>
+
+    <label>Processo / RIR / AIA (se houver)</label>
+    <input type="text" id="processo">
+
+    <label>Fonte Sonora Detalhada *</label>
+    <input type="text" id="fonteSonora" placeholder="Ex: caixas de som, música ao vivo" required>
+
+    <label>Vídeo ou Foto da Medição</label>
+    <!-- O atributo capture="environment" força a abertura da câmera no celular -->
+    <input type="file" id="midiaFile" accept="video/*,image/*" capture="environment">
+
+    <button type="submit" id="btnSubmit">Enviar e Gerar WhatsApp</button>
+  </form>
+</div>
+
+<div class="card hidden" id="successCard">
+  <h2>✅ Registro Salvo com Sucesso!</h2>
+  <p>O arquivo foi enviado para a pasta <b>Midia_da_Medicao</b> e gravado na planilha.</p>
+  <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">📲 Enviar Notificação via WhatsApp</a>
+</div>
+
+<script>
+  const SCRIPT_URL = https://script.google.com/macros/s/AKfycbyiD0qTM_RLPfuuB1JeyGkxI4tf9tV7kC_JziahSBP-prB5h2sH0-tTfodI5FUb3i8/exec;
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('rondaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.textContent = "Carregando mídia e salvando...";
+
+    const fileInput = document.getElementById('midiaFile');
+    let fileData = null;
+    let fileName = "";
+    let fileMimeType = "";
+
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      fileName = file.name;
+      fileMimeType = file.type;
+      fileData = await fileToBase64(file);
+    }
+
+    const payload = {
+      dataMedicao: document.getElementById('dataMedicao').value,
+      endereco: document.getElementById('endereco').value,
+      estabelecimento: document.getElementById('estabelecimento').value,
+      processo: document.getElementById('processo').value,
+      fonteSonora: document.getElementById('fonteSonora').value,
+      fileData: fileData,
+      fileName: fileName,
+      fileMimeType: fileMimeType
+    };
+
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.status === 'success') {
+        document.getElementById('formCard').classList.add('hidden');
+        document.getElementById('whatsappLink').href = result.linkWhatsApp;
+        document.getElementById('successCard').classList.remove('hidden');
+      } else {
+        alert("Erro ao salvar: " + result.message);
+        btn.disabled = false;
+        btn.textContent = "Enviar e Gerar WhatsApp";
+      }
+    } catch (err) {
+      alert("Erro na comunicação com a planilha.");
+      btn.disabled = false;
+      btn.textContent = "Enviar e Gerar WhatsApp";
+    }
+  });
+</script>
+
+</body>
+</html>
