@@ -15,6 +15,7 @@
     .hidden { display: none; }
     .btn-whatsapp { display: block; text-align: center; background: #25D366; color: white; text-decoration: none; padding: 12px; border-radius: 4px; font-weight: bold; margin-top: 15px; }
     .btn-voltar { background: #6c757d; margin-top: 10px; }
+    .aviso-copia { font-size: 0.85rem; color: #d9534f; margin-top: 8px; text-align: center; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -26,25 +27,25 @@
     <input type="date" id="dataMedicao" required>
 
     <label>Endereço Completo (Rua, Nº, Bairro) *</label>
-    <input type="text" id="endereco" required>
+    <input type="text" id="endereco" placeholder="Ex: Av. Jose Caballero, 134 - Centro" required>
 
     <label>Nome do Estabelecimento / Alvo *</label>
-    <input type="text" id="estabelecimento" required>
+    <input type="text" id="estabelecimento" placeholder="Ex: Padaria 4 Irmãos" required>
 
     <label>Processo / RIR / AIA (se houver)</label>
-    <input type="text" id="processo">
+    <input type="text" id="processo" placeholder="Ex: 20702">
 
     <label>Fonte Sonora Detalhada *</label>
     <input type="text" id="fonteSonora" placeholder="Ex: caixas de som, música ao vivo" required>
 
     <label>Vídeo ou Mídia Principal</label>
-    <input type="file" id="videoFile" accept="video/*,image/*" capture="environment">
+    <input type="file" id="videoFile" accept="video/*,image/*">
 
     <label>Foto Adicional 1</label>
-    <input type="file" id="foto1File" accept="image/*" capture="environment">
+    <input type="file" id="foto1File" accept="image/*">
 
     <label>Foto Adicional 2</label>
-    <input type="file" id="foto2File" accept="image/*" capture="environment">
+    <input type="file" id="foto2File" accept="image/*">
 
     <button type="submit" id="btnSubmit">Enviar e Gerar WhatsApp</button>
   </form>
@@ -53,12 +54,14 @@
 <div class="card hidden" id="successCard">
   <h2>✅ Registro Salvo com Sucesso!</h2>
   <p>Os arquivos foram enviados para a pasta <b>Midia_da_Medicao</b> e gravados na planilha.</p>
-  <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">📲 Enviar Notificação via WhatsApp</a>
+  <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">📲 Abrir Grupo do WhatsApp</a>
+  <div class="aviso-copia">📋 O texto do relatório foi copiado! Basta colar (Ctrl+V) no grupo.</div>
   <button type="button" class="btn-voltar" id="btnVoltar">🔄 Novo Registro / Voltar</button>
 </div>
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyiD0qTM_RLPfuuB1JeyGkxI4tf9tV7kC_JziahSBP-prB5h2sH0-tTfodI5FUb3i8/exec";
+  let textoMensagemGlobal = "";
 
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
@@ -111,7 +114,16 @@
 
       if (result.status === 'success') {
         document.getElementById('formCard').classList.add('hidden');
-        document.getElementById('whatsappLink').href = result.linkWhatsApp;
+        document.getElementById('whatsappLink').href = result.linkWhatsApp; 
+        
+        textoMensagemGlobal = `📱 *Novo Registro de Medição de Ruído e Vídeo*\n\n` +
+                              `📅 *Data da Medição:* ${payload.dataMedicao}\n` +
+                              `📍 *Endereço:* ${payload.endereco}\n` +
+                              `🏢 *Alvo:* ${payload.estabelecimento}\n` +
+                              `📋 *Processo:* ${payload.processo || 'N/A'}\n` +
+                              `🔊 *Fonte Sonora:* ${payload.fonteSonora}\n` +
+                              `_- Mensagem gerada automaticamente pelo sistema de fiscalização._`;
+
         document.getElementById('successCard').classList.remove('hidden');
       } else {
         alert("Erro ao salvar: " + result.message);
@@ -123,6 +135,12 @@
       btn.disabled = false;
       btn.textContent = "Enviar e Gerar WhatsApp";
     }
+  });
+
+  document.getElementById('whatsappLink').addEventListener('click', function() {
+    navigator.clipboard.writeText(textoMensagemGlobal).catch(err => {
+      console.log('Erro ao copiar texto: ', err);
+    });
   });
 
   document.getElementById('btnVoltar').addEventListener('click', function() {
