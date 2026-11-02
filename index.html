@@ -37,8 +37,14 @@
     <label>Fonte Sonora Detalhada *</label>
     <input type="text" id="fonteSonora" placeholder="Ex: caixas de som, música ao vivo" required>
 
-    <label>Vídeo ou Foto da Medição</label>
-    <input type="file" id="midiaFile" accept="video/*,image/*" capture="environment">
+    <label>Vídeo ou Mídia Principal</label>
+    <input type="file" id="videoFile" accept="video/*,image/*" capture="environment">
+
+    <label>Foto Adicional 1</label>
+    <input type="file" id="foto1File" accept="image/*" capture="environment">
+
+    <label>Foto Adicional 2</label>
+    <input type="file" id="foto2File" accept="image/*" capture="environment">
 
     <button type="submit" id="btnSubmit">Enviar e Gerar WhatsApp</button>
   </form>
@@ -46,7 +52,7 @@
 
 <div class="card hidden" id="successCard">
   <h2>✅ Registro Salvo com Sucesso!</h2>
-  <p>O arquivo foi enviado para a pasta <b>Midia_da_Medicao</b> e gravado na planilha.</p>
+  <p>Os arquivos foram enviados para a pasta <b>Midia_da_Medicao</b> e gravados na planilha.</p>
   <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">📲 Enviar Notificação via WhatsApp</a>
   <button type="button" class="btn-voltar" id="btnVoltar">🔄 Novo Registro / Voltar</button>
 </div>
@@ -69,18 +75,19 @@
     e.preventDefault();
     const btn = document.getElementById('btnSubmit');
     btn.disabled = true;
-    btn.textContent = "Carregando mídia e salvando...";
+    btn.textContent = "Carregando mídias e salvando...";
 
-    const fileInput = document.getElementById('midiaFile');
-    let fileData = null;
-    let fileName = "";
-    let fileMimeType = "";
-
-    if (fileInput.files.length > 0) {
-      const file = fileInput.files[0];
-      fileName = file.name;
-      fileMimeType = file.type;
-      fileData = await fileToBase64(file);
+    async function processFile(inputId) {
+      const input = document.getElementById(inputId);
+      if (input.files.length > 0) {
+        const file = input.files[0];
+        return {
+          name: file.name,
+          mimeType: file.type,
+          data: await fileToBase64(file)
+        };
+      }
+      return null;
     }
 
     const payload = {
@@ -89,9 +96,9 @@
       estabelecimento: document.getElementById('estabelecimento').value,
       processo: document.getElementById('processo').value,
       fonteSonora: document.getElementById('fonteSonora').value,
-      fileData: fileData,
-      fileName: fileName,
-      fileMimeType: fileMimeType
+      videoFile: await processFile('videoFile'),
+      foto1File: await processFile('foto1File'),
+      foto2File: await processFile('foto2File')
     };
 
     try {
@@ -118,9 +125,8 @@
     }
   });
 
-  // Botão para voltar, limpar o formulário e reativar o botão de envio
   document.getElementById('btnVoltar').addEventListener('click', function() {
-    form.reset(); // Limpa todos os campos
+    form.reset();
     const btn = document.getElementById('btnSubmit');
     btn.disabled = false;
     btn.textContent = "Enviar e Gerar WhatsApp";
