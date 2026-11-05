@@ -5,58 +5,362 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Medição de Ruído e Vídeo</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 15px; background: #f4f4f9; }
-    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    h2 { margin-top: 0; color: #333; font-size: 1.2rem; }
-    label { font-weight: bold; display: block; margin-top: 12px; font-size: 0.9rem; }
-    input, select { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    button { margin-top: 18px; width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
-    button:disabled { background: #999; }
-    .hidden { display: none; }
-    .btn-whatsapp { display: block; text-align: center; background: #25D366; color: white; text-decoration: none; padding: 12px; border-radius: 4px; font-weight: bold; margin-top: 15px; }
-    .btn-voltar { background: #6c757d; margin-top: 10px; }
-    .aviso-copia { font-size: 0.85rem; color: #d9534f; margin-top: 8px; text-align: center; font-weight: bold; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0b1019;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 25px 15px;
+    }
+
+    .main-container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    /* Cabeçalho Superior */
+    .app-header {
+      background-color: #121927;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .app-header-icon {
+      font-size: 1.6rem;
+    }
+
+    .app-header-text h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .app-header-text p {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Cartões / Seções */
+    .card {
+      background-color: #121927;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .section-title {
+      color: #38bdf8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    /* Inputs de Texto e Data */
+    input[type="text"],
+    input[type="date"] {
+      width: 100%;
+      padding: 11px 14px;
+      background-color: #1a2333;
+      border: 1px solid #2a364f;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]::placeholder {
+      color: #64748b;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* Inputs de Arquivo Estilizados */
+    .file-input-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #1a2333;
+      border: 1px solid #2a364f;
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      color: #94a3b8;
+      font-size: 0.8rem;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"]::-webkit-file-upload-button {
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.2s;
+    }
+
+    .file-input-wrapper input[type="file"]::-webkit-file-upload-button:hover {
+      background-color: #1d4ed8;
+    }
+
+    /* Botões */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.99);
+    }
+
+    .btn-primary:disabled {
+      background-color: #334155;
+      color: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-whatsapp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-align: center;
+      background-color: #16a34a;
+      color: white;
+      text-decoration: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-top: 16px;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+      transition: background-color 0.2s;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: #15803d;
+    }
+
+    .btn-voltar {
+      background-color: #334155;
+      color: #e2e8f0;
+      margin-top: 12px;
+      box-shadow: none;
+    }
+
+    .btn-voltar:hover {
+      background-color: #475569;
+    }
+
+    /* Mensagem de Sucesso */
+    .success-header {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .success-header h2 {
+      color: #4ade80;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .success-header p {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+
+    .aviso-copia {
+      font-size: 0.8rem;
+      color: #f87171;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 600;
+      background: rgba(248, 113, 113, 0.1);
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
 
-<div class="card" id="formCard">
-  <h2>🚨 Registro de Medição de Ruído e Vídeo</h2>
-  <form id="rondaForm">
-    <label>Data da Medição *</label>
-    <input type="date" id="dataMedicao" required>
+<div class="main-container">
 
-    <label>Endereço Completo (Rua, Nº, Bairro) *</label>
-    <input type="text" id="endereco" placeholder="Ex: Av. Jose Caballero, 134 - Centro" required>
+  <!-- Cabeçalho Principal -->
+  <div class="app-header">
+    <div class="app-header-title">
+      <span class="app-header-icon">🚨</span>
+      <div class="app-header-text">
+        <h1>Registro de Ruído</h1>
+        <p>Sistema de Fiscalização de Ruído e Vídeo</p>
+      </div>
+    </div>
+  </div>
 
-    <label>Nome do Estabelecimento / Alvo *</label>
-    <input type="text" id="estabelecimento" placeholder="Ex: Padaria 4 Irmãos" required>
+  <!-- Formulário -->
+  <div class="card" id="formCard">
+    <form id="rondaForm">
+      
+      <!-- Seção 1: Dados da Medição -->
+      <div class="section-title">
+        📍 DADOS DA MEDIÇÃO E LOCAL
+      </div>
 
-    <label>Processo / RIR / AIA (se houver)</label>
-    <input type="text" id="processo" placeholder="Ex: 20702">
+      <div class="form-group">
+        <label>Data da Medição *</label>
+        <input type="date" id="dataMedicao" required>
+      </div>
 
-    <label>Fonte Sonora Detalhada *</label>
-    <input type="text" id="fonteSonora" placeholder="Ex: caixas de som, música ao vivo" required>
+      <div class="form-group">
+        <label>Endereço Completo (Rua, Nº, Bairro) *</label>
+        <input type="text" id="endereco" placeholder="Ex: Av. Jose Caballero, 134 - Centro" required>
+      </div>
 
-    <label>Vídeo ou Mídia Principal</label>
-    <input type="file" id="videoFile" accept="video/*,image/*">
+      <div class="form-group">
+        <label>Nome do Estabelecimento / Alvo *</label>
+        <input type="text" id="estabelecimento" placeholder="Ex: Padaria 4 Irmãos" required>
+      </div>
 
-    <label>Foto Adicional 1</label>
-    <input type="file" id="foto1File" accept="video/*,image/*">
+      <div class="form-group">
+        <label>Processo / RIR / AIA (se houver)</label>
+        <input type="text" id="processo" placeholder="Ex: 20702">
+      </div>
 
-    <label>Foto Adicional 2</label>
-    <input type="file" id="foto2File" accept="video/*,image/*">
+      <div class="form-group">
+        <label>Fonte Sonora Detalhada *</label>
+        <input type="text" id="fonteSonora" placeholder="Ex: caixas de som, música ao vivo" required>
+      </div>
 
-    <button type="submit" id="btnSubmit">Enviar e Gerar WhatsApp</button>
-  </form>
-</div>
+      <!-- Seção 2: Mídias -->
+      <div class="section-title" style="margin-top: 22px;">
+        📷 FOTOS E DOCUMENTOS (DRIVE)
+      </div>
 
-<div class="card hidden" id="successCard">
-  <h2>✅ Registro Salvo com Sucesso!</h2>
-  <p>Os arquivos foram enviados para a pasta <b>Midia_da_Medicao</b> e gravados na planilha.</p>
-  <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">📲 Abrir Grupo do WhatsApp</a>
-  <div class="aviso-copia">📋 O texto do relatório foi copiado! Basta colar (Ctrl+V) no grupo.</div>
-  <button type="button" class="btn-voltar" id="btnVoltar">🔄 Novo Registro / Voltar</button>
+      <div class="form-group">
+        <label>Vídeo ou Mídia Principal</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="videoFile" accept="video/*,image/*">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Foto Adicional 1</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="foto1File" accept="video/*,image/*">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Foto Adicional 2</label>
+        <div class="file-input-wrapper">
+          <input type="file" id="foto2File" accept="video/*,image/*">
+        </div>
+      </div>
+
+      <button type="submit" id="btnSubmit" class="btn-primary">
+        💾 Enviar e Gerar WhatsApp
+      </button>
+    </form>
+  </div>
+
+  <!-- Tela de Sucesso -->
+  <div class="card hidden" id="successCard">
+    <div class="success-header">
+      <h2>✅ Registro Salvo com Sucesso!</h2>
+      <p>Os arquivos foram enviados para a pasta <b>Midia_da_Medicao</b> e gravados na planilha.</p>
+    </div>
+
+    <a id="whatsappLink" href="#" target="_blank" class="btn-whatsapp">
+      📲 Abrir Grupo do WhatsApp
+    </a>
+    
+    <div class="aviso-copia">
+      📋 O texto do relatório foi copiado! Basta colar (Ctrl+V) no grupo.
+    </div>
+
+    <button type="button" class="btn-primary btn-voltar" id="btnVoltar">
+      🔄 Novo Registro / Voltar
+    </button>
+  </div>
+
 </div>
 
 <script>
